@@ -1,0 +1,44 @@
+# Virtual Environment
+venv/
+env/
+.venv/
+*.virtualenv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Credentials - JANGAN COMMIT!
+.credentials.txt
+.env
+*.env
+credentials/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large files (optional - kalau mau save space di GitHub)
+# preprocessing/dataset_preprocessing/*.csv
+# preprocessing/dataset_preprocessing/*.pkl
+
+# Logs
+*.log
+logs/
