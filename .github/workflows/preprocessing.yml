@@ -23,21 +23,31 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12.7'
+        cache: 'pip'
     
     - name: 📦 Install Dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pandas==2.0.3
-        pip install numpy==1.25.2
-        pip install scikit-learn==1.3.0
-        pip install scipy==1.11.2
+        python -m pip install --upgrade pip setuptools wheel
+        pip install pandas==2.2.0
+        pip install numpy==1.26.3
+        pip install scikit-learn==1.4.0
+        pip install scipy==1.12.0
+    
+    - name: 🔍 Verify Installation
+      run: |
+        python -c "import pandas; print(f'✅ pandas {pandas.__version__}')"
+        python -c "import numpy; print(f'✅ numpy {numpy.__version__}')"
+        python -c "import sklearn; print(f'✅ scikit-learn {sklearn.__version__}')"
+        python -c "import scipy; print(f'✅ scipy {scipy.__version__}')"
     
     - name: 🔍 Verify Files
       run: |
         echo "Checking project structure..."
         ls -la
+        echo ""
         echo "Checking dataset_raw..."
         ls -la dataset_raw/
+        echo ""
         echo "Checking preprocessing..."
         ls -la preprocessing/
     
@@ -50,6 +60,7 @@ jobs:
       run: |
         echo "Checking output files..."
         ls -la preprocessing/dataset_preprocessing/
+        echo ""
         
         echo "Verifying train_processed.csv..."
         python -c "import pandas as pd; df=pd.read_csv('preprocessing/dataset_preprocessing/train_processed.csv'); print(f'✅ Train: {df.shape}')"
@@ -62,12 +73,12 @@ jobs:
     
     - name: 📊 Generate Summary
       run: |
-        echo "## 📊 Preprocessing Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "✅ **Status:** Preprocessing completed successfully!" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        python -c "
+        {
+          echo "## 📊 Preprocessing Summary"
+          echo ""
+          echo "✅ **Status:** Preprocessing completed successfully!"
+          echo ""
+          python -c "
         import pandas as pd
         train = pd.read_csv('preprocessing/dataset_preprocessing/train_processed.csv')
         test = pd.read_csv('preprocessing/dataset_preprocessing/test_processed.csv')
@@ -76,7 +87,8 @@ jobs:
         print(f'- Training: {train.shape}')
         print(f'- Test: {test.shape}')
         print(f'- Total Features: {train.shape[1] - 1}')
-        " >> $GITHUB_STEP_SUMMARY
+        "
+        } >> $GITHUB_STEP_SUMMARY
     
     - name: 📤 Upload Preprocessed Data as Artifacts
       uses: actions/upload-artifact@v4
@@ -84,13 +96,27 @@ jobs:
         name: preprocessed-dataset
         path: preprocessing/dataset_preprocessing/
         retention-days: 30
+        compression-level: 6
     
     - name: 🎉 Success Notification
       if: success()
       run: |
-        echo "✅✅✅ PREPROCESSING PIPELINE COMPLETED SUCCESSFULLY! ✅✅✅"
+        echo ""
+        echo "========================================="
+        echo "✅✅✅ PREPROCESSING COMPLETED! ✅✅✅"
+        echo "========================================="
+        echo ""
+        echo "📊 Preprocessed data uploaded as artifacts"
+        echo "📥 Download from Actions → Artifacts section"
+        echo ""
     
     - name: ❌ Failure Notification
       if: failure()
       run: |
-        echo "❌ Preprocessing pipeline failed. Check logs above for details."
+        echo ""
+        echo "========================================="
+        echo "❌ PREPROCESSING FAILED"
+        echo "========================================="
+        echo ""
+        echo "Check logs above for error details"
+        echo ""
