@@ -40,18 +40,18 @@ jobs:
         python -c "import sklearn; print(f'✅ scikit-learn {sklearn.__version__}')"
         python -c "import scipy; print(f'✅ scipy {scipy.__version__}')"
     
-    - name: 🔍 Verify Files
+    - name: 🔍 Verify Project Structure
       run: |
-        echo "Checking project structure..."
+        echo "Project structure:"
         ls -la
         echo ""
-        echo "Checking dataset_raw..."
+        echo "Dataset raw folder:"
         ls -la dataset_raw/
         echo ""
-        echo "Checking preprocessing..."
+        echo "Preprocessing folder:"
         ls -la preprocessing/
     
-    - name: 🔧 Run Preprocessing
+    - name: 🔧 Run Preprocessing Pipeline
       run: |
         cd preprocessing
         python automate_Amirullah.py
@@ -63,13 +63,13 @@ jobs:
         echo ""
         
         echo "Verifying train_processed.csv..."
-        python -c "import pandas as pd; df=pd.read_csv('preprocessing/dataset_preprocessing/train_processed.csv'); print(f'✅ Train: {df.shape}')"
+        python -c "import pandas as pd; df=pd.read_csv('preprocessing/dataset_preprocessing/train_processed.csv'); print(f'✅ Train shape: {df.shape}')"
         
         echo "Verifying test_processed.csv..."
-        python -c "import pandas as pd; df=pd.read_csv('preprocessing/dataset_preprocessing/test_processed.csv'); print(f'✅ Test: {df.shape}')"
+        python -c "import pandas as pd; df=pd.read_csv('preprocessing/dataset_preprocessing/test_processed.csv'); print(f'✅ Test shape: {df.shape}')"
         
         echo "Verifying scaler.pkl..."
-        python -c "import pickle; import os; assert os.path.exists('preprocessing/dataset_preprocessing/scaler.pkl'); print('✅ Scaler exists')"
+        python -c "import os; assert os.path.exists('preprocessing/dataset_preprocessing/scaler.pkl'); print('✅ Scaler exists')"
     
     - name: 📊 Generate Summary
       run: |
@@ -77,6 +77,11 @@ jobs:
           echo "## 📊 Preprocessing Summary"
           echo ""
           echo "✅ **Status:** Preprocessing completed successfully!"
+          echo ""
+          echo "**Files Generated:**"
+          echo "- \`train_processed.csv\`"
+          echo "- \`test_processed.csv\`"
+          echo "- \`scaler.pkl\`"
           echo ""
           python -c "
         import pandas as pd
@@ -87,6 +92,10 @@ jobs:
         print(f'- Training: {train.shape}')
         print(f'- Test: {test.shape}')
         print(f'- Total Features: {train.shape[1] - 1}')
+        print(f'')
+        print('**Next Steps:**')
+        print('- Download artifacts from Actions tab')
+        print('- Use processed data for modeling')
         "
         } >> $GITHUB_STEP_SUMMARY
     
@@ -102,21 +111,21 @@ jobs:
       if: success()
       run: |
         echo ""
-        echo "========================================="
-        echo "✅✅✅ PREPROCESSING COMPLETED! ✅✅✅"
-        echo "========================================="
+        echo "================================================"
+        echo "✅✅✅ PREPROCESSING COMPLETED SUCCESSFULLY! ✅✅✅"
+        echo "================================================"
         echo ""
         echo "📊 Preprocessed data uploaded as artifacts"
-        echo "📥 Download from Actions → Artifacts section"
+        echo "📥 Download from: Actions → Workflow run → Artifacts"
         echo ""
     
     - name: ❌ Failure Notification
       if: failure()
       run: |
         echo ""
-        echo "========================================="
-        echo "❌ PREPROCESSING FAILED"
-        echo "========================================="
+        echo "========================================"
+        echo "❌ PREPROCESSING PIPELINE FAILED"
+        echo "========================================"
         echo ""
-        echo "Check logs above for error details"
+        echo "Check the logs above for error details"
         echo ""
